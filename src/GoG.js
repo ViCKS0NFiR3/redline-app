@@ -351,118 +351,113 @@ class Board extends React.Component {
     if(this.state.isPrepStage ? gamePhase = "Begin Game" : gamePhase = "Reset Game");
     return (
       <React.Fragment>
-        <CssBaseline/>
-        <Container maxWidth="md">
-          <Typography component="div" style={{ backgroundColor: '#fffff', height: '50vh', align: 'center'}}>
-            <label>{this.state.gameEnded ? this.state.gameWinner : `Player ${this.state.player}` }</label>
-            <Button color="primary" id="prepButton" name="prepButton" onClick={() => this.prepStageChange()}>{gamePhase}</Button>
-            <label>{this.state.isPrepStage ? "" : `Player ${this.state.currentPlayerTurn}'s Turn`}</label>
-            <div className="board-row">
-            <Grid container spacing={0} alignContent="center">
-              <Grid item xs>{this.renderSquare(0,1)}</Grid>
-              <Grid item xs>{this.renderSquare(1,1)}</Grid>
-              <Grid item xs>{this.renderSquare(2,1)}</Grid>
-              <Grid item xs>{this.renderSquare(3,1)}</Grid>
-              <Grid item xs>{this.renderSquare(4,1)}</Grid>
-              <Grid item xs>{this.renderSquare(5,1)}</Grid>
-              <Grid item xs>{this.renderSquare(6,1)}</Grid>
-              <Grid item xs>{this.renderSquare(7,1)}</Grid>
-              <Grid item xs>{this.renderSquare(8,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-              <Grid item xs>{this.renderSquare(9,1)}</Grid>
-              <Grid item xs>{this.renderSquare(10,1)}</Grid>
-              <Grid item xs>{this.renderSquare(11,1)}</Grid>
-              <Grid item xs>{this.renderSquare(12,1)}</Grid>
-              <Grid item xs>{this.renderSquare(13,1)}</Grid>
-              <Grid item xs>{this.renderSquare(14,1)}</Grid>
-              <Grid item xs>{this.renderSquare(15,1)}</Grid>
-              <Grid item xs>{this.renderSquare(16,1)}</Grid>
-              <Grid item xs>{this.renderSquare(17,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-              <Grid item xs>{this.renderSquare(18,1)}</Grid>
-              <Grid item xs>{this.renderSquare(19,1)}</Grid>
-              <Grid item xs>{this.renderSquare(20,1)}</Grid>
-              <Grid item xs>{this.renderSquare(21,1)}</Grid>
-              <Grid item xs>{this.renderSquare(22,1)}</Grid>
-              <Grid item xs>{this.renderSquare(23,1)}</Grid>
-              <Grid item xs>{this.renderSquare(24,1)}</Grid>
-              <Grid item xs>{this.renderSquare(25,1)}</Grid>
-              <Grid item xs>{this.renderSquare(26,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-              <Grid item xs>{this.renderSquare(27,1)}</Grid>
-              <Grid item xs>{this.renderSquare(28,1)}</Grid>
-              <Grid item xs>{this.renderSquare(29,1)}</Grid>
-              <Grid item xs>{this.renderSquare(30,1)}</Grid>
-              <Grid item xs>{this.renderSquare(31,1)}</Grid>
-              <Grid item xs>{this.renderSquare(32,1)}</Grid>
-              <Grid item xs>{this.renderSquare(33,1)}</Grid>
-              <Grid item xs>{this.renderSquare(34,1)}</Grid>
-              <Grid item xs>{this.renderSquare(35,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-            <Grid item xs>{this.renderSquare(36,1)}</Grid>
-            <Grid item xs>{this.renderSquare(37,1)}</Grid>
-            <Grid item xs>{this.renderSquare(38,1)}</Grid>
-            <Grid item xs>{this.renderSquare(39,1)}</Grid>
-            <Grid item xs>{this.renderSquare(40,1)}</Grid>
-            <Grid item xs>{this.renderSquare(41,1)}</Grid>
-            <Grid item xs>{this.renderSquare(42,1)}</Grid>
-            <Grid item xs>{this.renderSquare(43,1)}</Grid>
-            <Grid item xs>{this.renderSquare(44,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-              <Grid item xs>{this.renderSquare(45,1)}</Grid>
-              <Grid item xs>{this.renderSquare(46,1)}</Grid>
-              <Grid item xs>{this.renderSquare(47,1)}</Grid>
-              <Grid item xs>{this.renderSquare(48,1)}</Grid>
-              <Grid item xs>{this.renderSquare(49,1)}</Grid>
-              <Grid item xs>{this.renderSquare(50,1)}</Grid>
-              <Grid item xs>{this.renderSquare(51,1)}</Grid>
-              <Grid item xs>{this.renderSquare(52,1)}</Grid>
-              <Grid item xs>{this.renderSquare(53,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-              <Grid item xs>{this.renderSquare(54,1)}</Grid>
-              <Grid item xs>{this.renderSquare(55,1)}</Grid>
-              <Grid item xs>{this.renderSquare(56,1)}</Grid>
-              <Grid item xs>{this.renderSquare(57,1)}</Grid>
-              <Grid item xs>{this.renderSquare(58,1)}</Grid>
-              <Grid item xs>{this.renderSquare(59,1)}</Grid>
-              <Grid item xs>{this.renderSquare(60,1)}</Grid>
-              <Grid item xs>{this.renderSquare(61,1)}</Grid>
-              <Grid item xs>{this.renderSquare(62,1)}</Grid>
-            </Grid>
-            </div>
-            <div className="board-row">
-            <Grid container spacing={0}>
-              <Grid item xs>{this.renderSquare(63,1)}</Grid>
-              <Grid item xs>{this.renderSquare(64,1)}</Grid>
-              <Grid item xs>{this.renderSquare(65,1)}</Grid>
-              <Grid item xs>{this.renderSquare(66,1)}</Grid>
-              <Grid item xs>{this.renderSquare(67,1)}</Grid>
-              <Grid item xs>{this.renderSquare(68,1)}</Grid>
-              <Grid item xs>{this.renderSquare(69,1)}</Grid>
-              <Grid item xs>{this.renderSquare(70,1)}</Grid>
-              <Grid item xs>{this.renderSquare(71,1)}</Grid>
-            </Grid>
-            </div>
-          </Typography>
-        </Container>
+        <label>{this.state.gameEnded ? this.state.gameWinner : `Player ${this.state.player}` }</label>
+        <Button color="primary" id="prepButton" name="prepButton" onClick={() => this.prepStageChange()}>{gamePhase}</Button>
+        <label>{this.state.isPrepStage ? "" : `Player ${this.state.currentPlayerTurn}'s Turn`}</label>
+        <div className="board-row">
+        <Grid container spacing={0} alignContent="center">
+          <Grid item xs>{this.renderSquare(0,1)}</Grid>
+          <Grid item xs>{this.renderSquare(1,1)}</Grid>
+          <Grid item xs>{this.renderSquare(2,1)}</Grid>
+          <Grid item xs>{this.renderSquare(3,1)}</Grid>
+          <Grid item xs>{this.renderSquare(4,1)}</Grid>
+          <Grid item xs>{this.renderSquare(5,1)}</Grid>
+          <Grid item xs>{this.renderSquare(6,1)}</Grid>
+          <Grid item xs>{this.renderSquare(7,1)}</Grid>
+          <Grid item xs>{this.renderSquare(8,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+          <Grid item xs>{this.renderSquare(9,1)}</Grid>
+          <Grid item xs>{this.renderSquare(10,1)}</Grid>
+          <Grid item xs>{this.renderSquare(11,1)}</Grid>
+          <Grid item xs>{this.renderSquare(12,1)}</Grid>
+          <Grid item xs>{this.renderSquare(13,1)}</Grid>
+          <Grid item xs>{this.renderSquare(14,1)}</Grid>
+          <Grid item xs>{this.renderSquare(15,1)}</Grid>
+          <Grid item xs>{this.renderSquare(16,1)}</Grid>
+          <Grid item xs>{this.renderSquare(17,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+          <Grid item xs>{this.renderSquare(18,1)}</Grid>
+          <Grid item xs>{this.renderSquare(19,1)}</Grid>
+          <Grid item xs>{this.renderSquare(20,1)}</Grid>
+          <Grid item xs>{this.renderSquare(21,1)}</Grid>
+          <Grid item xs>{this.renderSquare(22,1)}</Grid>
+          <Grid item xs>{this.renderSquare(23,1)}</Grid>
+          <Grid item xs>{this.renderSquare(24,1)}</Grid>
+          <Grid item xs>{this.renderSquare(25,1)}</Grid>
+          <Grid item xs>{this.renderSquare(26,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+          <Grid item xs>{this.renderSquare(27,1)}</Grid>
+          <Grid item xs>{this.renderSquare(28,1)}</Grid>
+          <Grid item xs>{this.renderSquare(29,1)}</Grid>
+          <Grid item xs>{this.renderSquare(30,1)}</Grid>
+          <Grid item xs>{this.renderSquare(31,1)}</Grid>
+          <Grid item xs>{this.renderSquare(32,1)}</Grid>
+          <Grid item xs>{this.renderSquare(33,1)}</Grid>
+          <Grid item xs>{this.renderSquare(34,1)}</Grid>
+          <Grid item xs>{this.renderSquare(35,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+        <Grid item xs>{this.renderSquare(36,1)}</Grid>
+        <Grid item xs>{this.renderSquare(37,1)}</Grid>
+        <Grid item xs>{this.renderSquare(38,1)}</Grid>
+        <Grid item xs>{this.renderSquare(39,1)}</Grid>
+        <Grid item xs>{this.renderSquare(40,1)}</Grid>
+        <Grid item xs>{this.renderSquare(41,1)}</Grid>
+        <Grid item xs>{this.renderSquare(42,1)}</Grid>
+        <Grid item xs>{this.renderSquare(43,1)}</Grid>
+        <Grid item xs>{this.renderSquare(44,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+          <Grid item xs>{this.renderSquare(45,1)}</Grid>
+          <Grid item xs>{this.renderSquare(46,1)}</Grid>
+          <Grid item xs>{this.renderSquare(47,1)}</Grid>
+          <Grid item xs>{this.renderSquare(48,1)}</Grid>
+          <Grid item xs>{this.renderSquare(49,1)}</Grid>
+          <Grid item xs>{this.renderSquare(50,1)}</Grid>
+          <Grid item xs>{this.renderSquare(51,1)}</Grid>
+          <Grid item xs>{this.renderSquare(52,1)}</Grid>
+          <Grid item xs>{this.renderSquare(53,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+          <Grid item xs>{this.renderSquare(54,1)}</Grid>
+          <Grid item xs>{this.renderSquare(55,1)}</Grid>
+          <Grid item xs>{this.renderSquare(56,1)}</Grid>
+          <Grid item xs>{this.renderSquare(57,1)}</Grid>
+          <Grid item xs>{this.renderSquare(58,1)}</Grid>
+          <Grid item xs>{this.renderSquare(59,1)}</Grid>
+          <Grid item xs>{this.renderSquare(60,1)}</Grid>
+          <Grid item xs>{this.renderSquare(61,1)}</Grid>
+          <Grid item xs>{this.renderSquare(62,1)}</Grid>
+        </Grid>
+        </div>
+        <div className="board-row">
+        <Grid container spacing={0}>
+          <Grid item xs>{this.renderSquare(63,1)}</Grid>
+          <Grid item xs>{this.renderSquare(64,1)}</Grid>
+          <Grid item xs>{this.renderSquare(65,1)}</Grid>
+          <Grid item xs>{this.renderSquare(66,1)}</Grid>
+          <Grid item xs>{this.renderSquare(67,1)}</Grid>
+          <Grid item xs>{this.renderSquare(68,1)}</Grid>
+          <Grid item xs>{this.renderSquare(69,1)}</Grid>
+          <Grid item xs>{this.renderSquare(70,1)}</Grid>
+          <Grid item xs>{this.renderSquare(71,1)}</Grid>
+        </Grid>
+        </div>
       </React.Fragment>
     );
   }
