@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom';
+import { Button } from '@material-ui/core';
 import './index.css';
 import io from 'socket.io-client';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Typography from '@material-ui/core/Typography';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
 
 const socket = io.connect('http://192.168.254.130:4000')
 
@@ -24,24 +29,25 @@ function Square(props){
     "Sgt":"sergeant.jpg",
     null:null
   }
-  if (props.currentTeam == props.player){
-    return (
-      <button className="square" onClick={props.onClick} value={props.value}>
-        <img src={pieceIcons[props.value]}/>
-      </button>
-    );
+
+if (props.currentTeam == props.player){
+  return (
+    <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
+      <img src={pieceIcons[props.value]}/>
+    </Button>
+  );
   } else {
     if(props.gameEnded && props.value != null) {
       return (
-        <button className="square" onClick={props.onClick} value={props.value}>
+        <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
           <img src={pieceIcons[props.value]}/>
-        </button>
+        </Button>
       );
     } else {
       return (
-        <button className="square" onClick={props.onClick} value={props.value}>
+        <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
           {props.currentTeam}
-        </button>
+        </Button>
       );
     }
   }
@@ -141,7 +147,7 @@ class Board extends React.Component {
   componentDidMount() {
     this.setState({initialPhase : this.state.squares});
     socket.on('board', ({ squares }, currentPlayer) => {
-      console.log(currentPlayer);
+      //console.log(currentPlayer);
       this.setState({currentPlayerTurn:currentPlayer});
       this.setState({squares:squares});
       this.checkWinner();
@@ -149,15 +155,15 @@ class Board extends React.Component {
     socket.on('isPlayer1', (value) => {
       if(value == "true" ? value = 1 : value = 2);
       this.setState({player:value});
-      console.log(this.state.player);
+      //console.log(this.state.player);
     })
     socket.on('gameEnd', (winner) => {
-      console.log(this.state.player);
+      //console.log(this.state.player);
       this.setState({gameEnded:true});
       this.setState({gameWinner: winner});
       this.setState({currentPlayerTurn:this.state.player});
       this.state.squares.forEach( (item) => (item[1] = this.state.player));
-      console.log(this.state.squares);
+      //console.log(this.state.squares);
     })
   }
 
@@ -165,11 +171,28 @@ class Board extends React.Component {
     let p1Piece = 0;
     let p2Piece = 0;
     let winner;
-    this.state.squares.forEach(item => {if (item[1] == 1){
+    const p1FlagWinningIndex = [63, 64, 65, 66, 67, 68, 69, 70, 71];
+    const p2FlagWinningIndex = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    this.state.squares.forEach((item, index) => {if (item[1] == 1){
       p1Piece++;
     } if (item[1] == 2){
       p2Piece++;
-    }});
+    } if (item[0] == 'F' && item[1] == 1){
+        if(p1FlagWinningIndex.includes(index)){
+          winner = "Player 1 wins";
+          this.setState({gameEnded:true});
+          socket.emit('gameEnd', winner);
+        }
+        console.log(index);
+    } if (item[0] == 'F' && item[1] == 2){
+      if(p2FlagWinningIndex.includes(index)){
+        winner = "Player 2 wins";
+        this.setState({gameEnded:true});
+        socket.emit('gameEnd', winner);
+      }
+      console.log(index);
+    }
+  });
     if (p2Piece == 0 && p1Piece != 0){
       winner = "Player 1 wins";
       this.setState({gameEnded:true});
@@ -178,13 +201,6 @@ class Board extends React.Component {
       winner = "Player 2 wins";
       this.setState({gameEnded:true});
       socket.emit('gameEnd', winner);
-
-      /*
-        this.setState({gameEnded:true});
-        winner = `Player ${piece[1]} wins!`;
-        console.log(`Player ${piece[1]} wins!`);
-        socket.emit('gameEnd', winner);
-      */
     }
   }
 
@@ -225,15 +241,15 @@ class Board extends React.Component {
       "P" : ["S","F"],
       "F" : ["F"],
     }
-    console.log(`Piece: ${piece[1]}`);
-    console.log(`Enemy: ${enemy[1]}`);
+    //console.log(`Piece: ${piece[1]}`);
+    //console.log(`Enemy: ${enemy[1]}`);
     let winner = null;
     //console.log("Checking who's the winner");
     if(checkIfUnderPiece[piece[0]].includes(enemy[0])){
       if(enemy[0] == "F"){
         this.setState({gameEnded:true});
         winner = `Player ${piece[1]} wins!`;
-        console.log(`Player ${piece[1]} wins!`);
+        //console.log(`Player ${piece[1]} wins!`);
         socket.emit('gameEnd', winner);
       }
       //console.log("You win");
@@ -248,11 +264,12 @@ class Board extends React.Component {
     // CHECK WHAT PIECE WON
   }
 
-  /*movePiece (i,team){
-      const squares = this.state.squares.slice();
-      if(!this.state.gameEnded){
-        this.setState({squares: squares});   
-        if (this.state.previous === null){  // first click on the piece
+  movePiece (i,team){
+    const squares = this.state.squares.slice();
+    if(!this.state.gameEnded){
+      this.setState({squares: squares});
+      if(this.state.currentPlayerTurn == this.state.player){
+        if (this.state.previous === null && this.state.squares[i][1] == this.state.currentPlayerTurn){  // first click on the piece
           this.setState({previous: i});
           this.setState({temp: this.state.squares[i]});
         } else {      // if there is a selected piece
@@ -266,6 +283,7 @@ class Board extends React.Component {
               //console.log(`${this.state.temp} ${this.state.squares[i]}`);
               this.setState({previous: null});
               this.setState({temp: null});
+              //console.log(this.state.currentPlayerTurn);
             } else {  // collision with enemy piece
               console.log(`Piece: ${this.state.temp[1]} collide: ${this.state.squares[i][1]}`)
               if(this.state.temp[1] != this.state.squares[i][1]){
@@ -277,6 +295,7 @@ class Board extends React.Component {
                 squares[this.state.previous][1] = null;
                 this.setState({previous: null});
                 this.setState({temp: null});
+                //console.log(this.state.currentPlayerTurn);
               }
             }
             socket.emit('board', { squares});
@@ -284,49 +303,8 @@ class Board extends React.Component {
           }
         }
       }
-    }*/
-
-    movePiece (i,team){
-      const squares = this.state.squares.slice();
-      if(!this.state.gameEnded){
-        this.setState({squares: squares});
-        if(this.state.currentPlayerTurn == this.state.player){
-          if (this.state.previous === null && this.state.squares[i][1] == this.state.currentPlayerTurn){  // first click on the piece
-            this.setState({previous: i});
-            this.setState({temp: this.state.squares[i]});
-          } else {      // if there is a selected piece
-            let move = i - this.state.previous
-            //console.log(`move = ${i} - ${this.state.previous}`);
-            //console.log(`move = ${move}`);
-            if (move === -9 || move === 9 || move === -1 || move === 1){ // piece can move one unit at a time
-              if (this.state.squares[i][0] === null){  // move to destination unit
-                squares[this.state.previous] = this.state.squares[i];
-                squares[i] = this.state.temp;
-                //console.log(`${this.state.temp} ${this.state.squares[i]}`);
-                this.setState({previous: null});
-                this.setState({temp: null});
-                console.log(this.state.currentPlayerTurn);
-              } else {  // collision with enemy piece
-                console.log(`Piece: ${this.state.temp[1]} collide: ${this.state.squares[i][1]}`)
-                if(this.state.temp[1] != this.state.squares[i][1]){
-                  let winner = this.arbiter(this.state.temp, this.state.squares[i]);
-                  squares[i][0] = winner[0];
-                  squares[i][1] = winner[1];
-                  //console.log(squares[i])
-                  squares[this.state.previous][0] = null;
-                  squares[this.state.previous][1] = null;
-                  this.setState({previous: null});
-                  this.setState({temp: null});
-                  console.log(this.state.currentPlayerTurn);
-                }
-              }
-              socket.emit('board', { squares});
-              //console.log(this.state.squares);
-            }
-          }
-        }
-      }
     }
+  }
 
   renderSquare(i, team) {
     const squares = this.state.squares.slice();
@@ -353,7 +331,7 @@ class Board extends React.Component {
     if(this.state.isPrepStage){
       this.setState({
         isPrepStage : !this.state.isPrepStage});
-      console.log(this.state.squares);
+      //console.log(this.state.squares);
     } else {
       // REVERT TO START PHASE
       this.setState({
@@ -368,112 +346,124 @@ class Board extends React.Component {
     }    
   }
 
-/*  radioOnchange(){
-    let currentPlayer = 1;
-    this.setState({isPlayerOne:!this.state.isPlayerOne});
-    if (this.state.isPlayerOne ? currentPlayer = 1 : currentPlayer = 2);
-    this.setState({player: currentPlayer})
-  }*/
-// ADD to render if want to add Player Change Button
-// <input type="button" id="player" name="playerNo" value="Player Change" onClick={() => this.radioOnchange()}/>
-
   render() {
     let gamePhase = "";
     if(this.state.isPrepStage ? gamePhase = "Begin Game" : gamePhase = "Reset Game");
     return (
-      <div>
-        <label>{this.state.gameEnded ? this.state.gameWinner : `Player ${this.state.player}` }</label>
-        <input type="button" id="prepButton" name="prepButton" value={gamePhase} onClick={() => this.prepStageChange()}/>
-        <label>{this.state.isPrepStage ? "" : `Player ${this.state.currentPlayerTurn}'s Turn`}</label>
-        <div className="board-row">
-          {this.renderSquare(0,1)}
-          {this.renderSquare(1,1)}
-          {this.renderSquare(2,1)}
-          {this.renderSquare(3,1)}
-          {this.renderSquare(4,1)}
-          {this.renderSquare(5,1)}
-          {this.renderSquare(6,1)}
-          {this.renderSquare(7,1)}
-          {this.renderSquare(8,1)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(9,1)}
-          {this.renderSquare(10,1)}
-          {this.renderSquare(11,1)}
-          {this.renderSquare(12,1)}
-          {this.renderSquare(13,1)}
-          {this.renderSquare(14,1)}
-          {this.renderSquare(15,1)}
-          {this.renderSquare(16,1)}
-          {this.renderSquare(17,1)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(18,1)}
-          {this.renderSquare(19,1)}
-          {this.renderSquare(20,1)}
-          {this.renderSquare(21,1)}
-          {this.renderSquare(22,1)}
-          {this.renderSquare(23,1)}
-          {this.renderSquare(24,1)}
-          {this.renderSquare(25,1)}
-          {this.renderSquare(26,1)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(27,1)}
-          {this.renderSquare(28,1)}
-          {this.renderSquare(29,1)}
-          {this.renderSquare(30,1)}
-          {this.renderSquare(31,1)}
-          {this.renderSquare(32,1)}
-          {this.renderSquare(33,1)}
-          {this.renderSquare(34,1)}
-          {this.renderSquare(35,1)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(36,2)}
-          {this.renderSquare(37,2)}
-          {this.renderSquare(38,2)}
-          {this.renderSquare(39,2)}
-          {this.renderSquare(40,2)}
-          {this.renderSquare(41,2)}
-          {this.renderSquare(42,2)}
-          {this.renderSquare(43,2)}
-          {this.renderSquare(44,2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(45,2)}
-          {this.renderSquare(46,2)}
-          {this.renderSquare(47,2)}
-          {this.renderSquare(48,2)}
-          {this.renderSquare(49,2)}
-          {this.renderSquare(50,2)}
-          {this.renderSquare(51,2)}
-          {this.renderSquare(52,2)}
-          {this.renderSquare(53,2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(54,2)}
-          {this.renderSquare(55,2)}
-          {this.renderSquare(56,2)}
-          {this.renderSquare(57,2)}
-          {this.renderSquare(58,2)}
-          {this.renderSquare(59,2)}
-          {this.renderSquare(60,2)}
-          {this.renderSquare(61,2)}
-          {this.renderSquare(62,2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(63,2)}
-          {this.renderSquare(64,2)}
-          {this.renderSquare(65,2)}
-          {this.renderSquare(66,2)}
-          {this.renderSquare(67,2)}
-          {this.renderSquare(68,2)}
-          {this.renderSquare(69,2)}
-          {this.renderSquare(70,2)}
-          {this.renderSquare(71,2)}
-        </div>
-      </div>
+      <React.Fragment>
+        <CssBaseline/>
+        <Container maxWidth="md">
+          <Typography component="div" style={{ backgroundColor: '#fffff', height: '50vh', align: 'center'}}>
+            <label>{this.state.gameEnded ? this.state.gameWinner : `Player ${this.state.player}` }</label>
+            <Button color="primary" id="prepButton" name="prepButton" onClick={() => this.prepStageChange()}>{gamePhase}</Button>
+            <label>{this.state.isPrepStage ? "" : `Player ${this.state.currentPlayerTurn}'s Turn`}</label>
+            <div className="board-row">
+            <Grid container spacing={0} alignContent="center">
+              <Grid item xs>{this.renderSquare(0,1)}</Grid>
+              <Grid item xs>{this.renderSquare(1,1)}</Grid>
+              <Grid item xs>{this.renderSquare(2,1)}</Grid>
+              <Grid item xs>{this.renderSquare(3,1)}</Grid>
+              <Grid item xs>{this.renderSquare(4,1)}</Grid>
+              <Grid item xs>{this.renderSquare(5,1)}</Grid>
+              <Grid item xs>{this.renderSquare(6,1)}</Grid>
+              <Grid item xs>{this.renderSquare(7,1)}</Grid>
+              <Grid item xs>{this.renderSquare(8,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+              <Grid item xs>{this.renderSquare(9,1)}</Grid>
+              <Grid item xs>{this.renderSquare(10,1)}</Grid>
+              <Grid item xs>{this.renderSquare(11,1)}</Grid>
+              <Grid item xs>{this.renderSquare(12,1)}</Grid>
+              <Grid item xs>{this.renderSquare(13,1)}</Grid>
+              <Grid item xs>{this.renderSquare(14,1)}</Grid>
+              <Grid item xs>{this.renderSquare(15,1)}</Grid>
+              <Grid item xs>{this.renderSquare(16,1)}</Grid>
+              <Grid item xs>{this.renderSquare(17,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+              <Grid item xs>{this.renderSquare(18,1)}</Grid>
+              <Grid item xs>{this.renderSquare(19,1)}</Grid>
+              <Grid item xs>{this.renderSquare(20,1)}</Grid>
+              <Grid item xs>{this.renderSquare(21,1)}</Grid>
+              <Grid item xs>{this.renderSquare(22,1)}</Grid>
+              <Grid item xs>{this.renderSquare(23,1)}</Grid>
+              <Grid item xs>{this.renderSquare(24,1)}</Grid>
+              <Grid item xs>{this.renderSquare(25,1)}</Grid>
+              <Grid item xs>{this.renderSquare(26,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+              <Grid item xs>{this.renderSquare(27,1)}</Grid>
+              <Grid item xs>{this.renderSquare(28,1)}</Grid>
+              <Grid item xs>{this.renderSquare(29,1)}</Grid>
+              <Grid item xs>{this.renderSquare(30,1)}</Grid>
+              <Grid item xs>{this.renderSquare(31,1)}</Grid>
+              <Grid item xs>{this.renderSquare(32,1)}</Grid>
+              <Grid item xs>{this.renderSquare(33,1)}</Grid>
+              <Grid item xs>{this.renderSquare(34,1)}</Grid>
+              <Grid item xs>{this.renderSquare(35,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+            <Grid item xs>{this.renderSquare(36,1)}</Grid>
+            <Grid item xs>{this.renderSquare(37,1)}</Grid>
+            <Grid item xs>{this.renderSquare(38,1)}</Grid>
+            <Grid item xs>{this.renderSquare(39,1)}</Grid>
+            <Grid item xs>{this.renderSquare(40,1)}</Grid>
+            <Grid item xs>{this.renderSquare(41,1)}</Grid>
+            <Grid item xs>{this.renderSquare(42,1)}</Grid>
+            <Grid item xs>{this.renderSquare(43,1)}</Grid>
+            <Grid item xs>{this.renderSquare(44,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+              <Grid item xs>{this.renderSquare(45,1)}</Grid>
+              <Grid item xs>{this.renderSquare(46,1)}</Grid>
+              <Grid item xs>{this.renderSquare(47,1)}</Grid>
+              <Grid item xs>{this.renderSquare(48,1)}</Grid>
+              <Grid item xs>{this.renderSquare(49,1)}</Grid>
+              <Grid item xs>{this.renderSquare(50,1)}</Grid>
+              <Grid item xs>{this.renderSquare(51,1)}</Grid>
+              <Grid item xs>{this.renderSquare(52,1)}</Grid>
+              <Grid item xs>{this.renderSquare(53,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+              <Grid item xs>{this.renderSquare(54,1)}</Grid>
+              <Grid item xs>{this.renderSquare(55,1)}</Grid>
+              <Grid item xs>{this.renderSquare(56,1)}</Grid>
+              <Grid item xs>{this.renderSquare(57,1)}</Grid>
+              <Grid item xs>{this.renderSquare(58,1)}</Grid>
+              <Grid item xs>{this.renderSquare(59,1)}</Grid>
+              <Grid item xs>{this.renderSquare(60,1)}</Grid>
+              <Grid item xs>{this.renderSquare(61,1)}</Grid>
+              <Grid item xs>{this.renderSquare(62,1)}</Grid>
+            </Grid>
+            </div>
+            <div className="board-row">
+            <Grid container spacing={0}>
+              <Grid item xs>{this.renderSquare(63,1)}</Grid>
+              <Grid item xs>{this.renderSquare(64,1)}</Grid>
+              <Grid item xs>{this.renderSquare(65,1)}</Grid>
+              <Grid item xs>{this.renderSquare(66,1)}</Grid>
+              <Grid item xs>{this.renderSquare(67,1)}</Grid>
+              <Grid item xs>{this.renderSquare(68,1)}</Grid>
+              <Grid item xs>{this.renderSquare(69,1)}</Grid>
+              <Grid item xs>{this.renderSquare(70,1)}</Grid>
+              <Grid item xs>{this.renderSquare(71,1)}</Grid>
+            </Grid>
+            </div>
+          </Typography>
+        </Container>
+      </React.Fragment>
     );
   }
 }
