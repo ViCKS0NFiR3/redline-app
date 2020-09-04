@@ -27,7 +27,7 @@ ol, ul {
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  width: 20px;
 }
 
 .square:focus {
@@ -51,4 +51,9 @@ ol, ul {
 
 .game-info {
   margin: auto;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }

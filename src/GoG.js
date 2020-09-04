@@ -12,28 +12,28 @@ const socket = io.connect('http://192.168.254.130:4000')
 
 function Square(props){
   const pieceIcons = {
-    "C":"colonel.jpg",
-    "S":"spy.jpg",
-    5:"5star.jpg",
-    "F":"flag.jpg",
-    1:"1star.jpg",
-    2:"2star.jpg",
-    3:"3star.jpg",
-    4:"4star.jpg",
-    "LC":"ltCol.jpg",
-    "M":"major.jpg",
-    "P":"private.jpg",
-    "1L":"1stLieut.jpg",
-    "Cpt":"captain.jpg",
-    "2L":"2ndLieut.jpg",
-    "Sgt":"sergeant.jpg",
+    "C":"colonel.png",
+    "S":"spy.png",
+    5:"5star.png",
+    "F":"flag.png",
+    1:"1star.png",
+    2:"2star.png",
+    3:"3star.png",
+    4:"4star.png",
+    "LC":"ltCol.png",
+    "M":"major.png",
+    "P":"private.png",
+    "1L":"1stLieut.png",
+    "Cpt":"captain.png",
+    "2L":"2ndLieut.png",
+    "Sgt":"sergeant.png",
     null:null
   }
 
 if (props.currentTeam == props.player){
   return (
-    <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
-      <img src={pieceIcons[props.value]}/>
+    <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" size="small" color="default">
+      <img src={`newAssets/${pieceIcons[props.value]}`}/>
     </Button>
   );
   } else {
@@ -283,6 +283,7 @@ class Board extends React.Component {
               //console.log(`${this.state.temp} ${this.state.squares[i]}`);
               this.setState({previous: null});
               this.setState({temp: null});
+              socket.emit('board', { squares});
               //console.log(this.state.currentPlayerTurn);
             } else {  // collision with enemy piece
               console.log(`Piece: ${this.state.temp[1]} collide: ${this.state.squares[i][1]}`)
@@ -295,11 +296,13 @@ class Board extends React.Component {
                 squares[this.state.previous][1] = null;
                 this.setState({previous: null});
                 this.setState({temp: null});
+                socket.emit('board', { squares});
                 //console.log(this.state.currentPlayerTurn);
+              } else {
+                this.setState({previous: null});
+                this.setState({temp: null});
               }
             }
-            socket.emit('board', { squares});
-            //console.log(this.state.squares);
           }
         }
       }
@@ -352,112 +355,98 @@ class Board extends React.Component {
     return (
       <React.Fragment>
         <label>{this.state.gameEnded ? this.state.gameWinner : `Player ${this.state.player}` }</label>
-        <Button color="primary" id="prepButton" name="prepButton" onClick={() => this.prepStageChange()}>{gamePhase}</Button>
+        <Button color="primary" id="prepButton" name="prepButton" size="large" onClick={() => this.prepStageChange()}>{gamePhase}</Button>
         <label>{this.state.isPrepStage ? "" : `Player ${this.state.currentPlayerTurn}'s Turn`}</label>
-        <div className="board-row">
-        <Grid container spacing={0} alignContent="center">
-          <Grid item xs>{this.renderSquare(0,1)}</Grid>
-          <Grid item xs>{this.renderSquare(1,1)}</Grid>
-          <Grid item xs>{this.renderSquare(2,1)}</Grid>
-          <Grid item xs>{this.renderSquare(3,1)}</Grid>
-          <Grid item xs>{this.renderSquare(4,1)}</Grid>
-          <Grid item xs>{this.renderSquare(5,1)}</Grid>
-          <Grid item xs>{this.renderSquare(6,1)}</Grid>
-          <Grid item xs>{this.renderSquare(7,1)}</Grid>
-          <Grid item xs>{this.renderSquare(8,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-          <Grid item xs>{this.renderSquare(9,1)}</Grid>
-          <Grid item xs>{this.renderSquare(10,1)}</Grid>
-          <Grid item xs>{this.renderSquare(11,1)}</Grid>
-          <Grid item xs>{this.renderSquare(12,1)}</Grid>
-          <Grid item xs>{this.renderSquare(13,1)}</Grid>
-          <Grid item xs>{this.renderSquare(14,1)}</Grid>
-          <Grid item xs>{this.renderSquare(15,1)}</Grid>
-          <Grid item xs>{this.renderSquare(16,1)}</Grid>
-          <Grid item xs>{this.renderSquare(17,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-          <Grid item xs>{this.renderSquare(18,1)}</Grid>
-          <Grid item xs>{this.renderSquare(19,1)}</Grid>
-          <Grid item xs>{this.renderSquare(20,1)}</Grid>
-          <Grid item xs>{this.renderSquare(21,1)}</Grid>
-          <Grid item xs>{this.renderSquare(22,1)}</Grid>
-          <Grid item xs>{this.renderSquare(23,1)}</Grid>
-          <Grid item xs>{this.renderSquare(24,1)}</Grid>
-          <Grid item xs>{this.renderSquare(25,1)}</Grid>
-          <Grid item xs>{this.renderSquare(26,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-          <Grid item xs>{this.renderSquare(27,1)}</Grid>
-          <Grid item xs>{this.renderSquare(28,1)}</Grid>
-          <Grid item xs>{this.renderSquare(29,1)}</Grid>
-          <Grid item xs>{this.renderSquare(30,1)}</Grid>
-          <Grid item xs>{this.renderSquare(31,1)}</Grid>
-          <Grid item xs>{this.renderSquare(32,1)}</Grid>
-          <Grid item xs>{this.renderSquare(33,1)}</Grid>
-          <Grid item xs>{this.renderSquare(34,1)}</Grid>
-          <Grid item xs>{this.renderSquare(35,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-        <Grid item xs>{this.renderSquare(36,1)}</Grid>
-        <Grid item xs>{this.renderSquare(37,1)}</Grid>
-        <Grid item xs>{this.renderSquare(38,1)}</Grid>
-        <Grid item xs>{this.renderSquare(39,1)}</Grid>
-        <Grid item xs>{this.renderSquare(40,1)}</Grid>
-        <Grid item xs>{this.renderSquare(41,1)}</Grid>
-        <Grid item xs>{this.renderSquare(42,1)}</Grid>
-        <Grid item xs>{this.renderSquare(43,1)}</Grid>
-        <Grid item xs>{this.renderSquare(44,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-          <Grid item xs>{this.renderSquare(45,1)}</Grid>
-          <Grid item xs>{this.renderSquare(46,1)}</Grid>
-          <Grid item xs>{this.renderSquare(47,1)}</Grid>
-          <Grid item xs>{this.renderSquare(48,1)}</Grid>
-          <Grid item xs>{this.renderSquare(49,1)}</Grid>
-          <Grid item xs>{this.renderSquare(50,1)}</Grid>
-          <Grid item xs>{this.renderSquare(51,1)}</Grid>
-          <Grid item xs>{this.renderSquare(52,1)}</Grid>
-          <Grid item xs>{this.renderSquare(53,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-          <Grid item xs>{this.renderSquare(54,1)}</Grid>
-          <Grid item xs>{this.renderSquare(55,1)}</Grid>
-          <Grid item xs>{this.renderSquare(56,1)}</Grid>
-          <Grid item xs>{this.renderSquare(57,1)}</Grid>
-          <Grid item xs>{this.renderSquare(58,1)}</Grid>
-          <Grid item xs>{this.renderSquare(59,1)}</Grid>
-          <Grid item xs>{this.renderSquare(60,1)}</Grid>
-          <Grid item xs>{this.renderSquare(61,1)}</Grid>
-          <Grid item xs>{this.renderSquare(62,1)}</Grid>
-        </Grid>
-        </div>
-        <div className="board-row">
-        <Grid container spacing={0}>
-          <Grid item xs>{this.renderSquare(63,1)}</Grid>
-          <Grid item xs>{this.renderSquare(64,1)}</Grid>
-          <Grid item xs>{this.renderSquare(65,1)}</Grid>
-          <Grid item xs>{this.renderSquare(66,1)}</Grid>
-          <Grid item xs>{this.renderSquare(67,1)}</Grid>
-          <Grid item xs>{this.renderSquare(68,1)}</Grid>
-          <Grid item xs>{this.renderSquare(69,1)}</Grid>
-          <Grid item xs>{this.renderSquare(70,1)}</Grid>
-          <Grid item xs>{this.renderSquare(71,1)}</Grid>
-        </Grid>
-        </div>
+        <table>
+        <tr>
+          {this.renderSquare(0,1)}
+          {this.renderSquare(1,1)}
+          {this.renderSquare(2,1)}
+          {this.renderSquare(3,1)}
+          {this.renderSquare(4,1)}
+          {this.renderSquare(5,1)}
+          {this.renderSquare(6,1)}
+          {this.renderSquare(7,1)}
+          {this.renderSquare(8,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(9,1)}
+          {this.renderSquare(10,1)}
+          {this.renderSquare(11,1)}
+          {this.renderSquare(12,1)}
+          {this.renderSquare(13,1)}
+          {this.renderSquare(14,1)}
+          {this.renderSquare(15,1)}
+          {this.renderSquare(16,1)}
+          {this.renderSquare(17,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(18,1)}
+          {this.renderSquare(19,1)}
+          {this.renderSquare(20,1)}
+          {this.renderSquare(21,1)}
+          {this.renderSquare(22,1)}
+          {this.renderSquare(23,1)}
+          {this.renderSquare(24,1)}
+          {this.renderSquare(25,1)}
+          {this.renderSquare(26,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(27,1)}
+          {this.renderSquare(28,1)}
+          {this.renderSquare(29,1)}
+          {this.renderSquare(30,1)}
+          {this.renderSquare(31,1)}
+          {this.renderSquare(32,1)}
+          {this.renderSquare(33,1)}
+          {this.renderSquare(34,1)}
+          {this.renderSquare(35,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(36,1)}
+          {this.renderSquare(37,1)}
+          {this.renderSquare(38,1)}
+          {this.renderSquare(39,1)}
+          {this.renderSquare(40,1)}
+          {this.renderSquare(41,1)}
+          {this.renderSquare(42,1)}
+          {this.renderSquare(43,1)}
+          {this.renderSquare(44,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(45,1)}
+          {this.renderSquare(46,1)}
+          {this.renderSquare(47,1)}
+          {this.renderSquare(48,1)}
+          {this.renderSquare(49,1)}
+          {this.renderSquare(50,1)}
+          {this.renderSquare(51,1)}
+          {this.renderSquare(52,1)}
+          {this.renderSquare(53,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(54,1)}
+          {this.renderSquare(55,1)}
+          {this.renderSquare(56,1)}
+          {this.renderSquare(57,1)}
+          {this.renderSquare(58,1)}
+          {this.renderSquare(59,1)}
+          {this.renderSquare(60,1)}
+          {this.renderSquare(61,1)}
+          {this.renderSquare(62,1)}
+        </tr>
+        <tr>
+          {this.renderSquare(63,1)}
+          {this.renderSquare(64,1)}
+          {this.renderSquare(65,1)}
+          {this.renderSquare(66,1)}
+          {this.renderSquare(67,1)}
+          {this.renderSquare(68,1)}
+          {this.renderSquare(69,1)}
+          {this.renderSquare(70,1)}
+          {this.renderSquare(71,1)}
+        </tr>
+      </table>
       </React.Fragment>
     );
   }
