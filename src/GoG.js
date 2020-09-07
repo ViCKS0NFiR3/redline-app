@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import { Button } from '@material-ui/core';
 import './index.css';
 import io from 'socket.io-client';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
-import Container from '@material-ui/core/Container';
-import Grid from '@material-ui/core/Grid';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import InfoIcon from '@material-ui/icons/Info';
+import Icon from '@material-ui/core/Icon';
+import IconButton from '@material-ui/core/IconButton';
+import Modal from '@material-ui/core/Modal';
 
 const socket = io.connect('http://192.168.254.130:4000')
 
@@ -29,25 +31,28 @@ function Square(props){
     "Sgt":"sergeant.png",
     null:null
   }
-
 if (props.currentTeam == props.player){
   return (
-    <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" size="small" color="default">
+    <button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default">
       <img src={`newAssets/${pieceIcons[props.value]}`}/>
-    </Button>
+    </button>
   );
   } else {
     if(props.gameEnded && props.value != null) {
       return (
-        <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
-          <img src={pieceIcons[props.value]}/>
-        </Button>
+        <button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
+          <img src={`newAssets/${pieceIcons[props.value]}`}/>
+        </button>
       );
-    } else {
+    } if (props.currentTeam != props.player && props.currentTeam != null){
       return (
-        <Button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small">
-          {props.currentTeam}
-        </Button>
+        <button className="square" onClick={props.onClick} value={props.value} variant="outlined" size="small" color="default">
+          <img src={`newAssets/logo.png`}/>
+        </button>
+      );
+      } else {
+      return (
+        <button className="square" onClick={props.onClick} value={props.value} variant="outlined" color="default" size="small"/>
       );
     }
   }
@@ -140,7 +145,9 @@ class Board extends React.Component {
       temp_position: null,
       isPrepStage: true,
       gameEnded: false,
-      gameWinner: null
+      gameWinner: null,
+      themeChanged: false,
+      ModalOpen: false,
     };
   }
    
@@ -183,14 +190,14 @@ class Board extends React.Component {
           this.setState({gameEnded:true});
           socket.emit('gameEnd', winner);
         }
-        console.log(index);
+        //console.log(index);
     } if (item[0] == 'F' && item[1] == 2){
       if(p2FlagWinningIndex.includes(index)){
         winner = "Player 2 wins";
         this.setState({gameEnded:true});
         socket.emit('gameEnd', winner);
       }
-      console.log(index);
+      //console.log(index);
     }
   });
     if (p2Piece == 0 && p1Piece != 0){
@@ -349,16 +356,62 @@ class Board extends React.Component {
     }    
   }
 
+  themeChange(e){
+    e.preventDefault();
+    this.setState({themeChanged:e.target.checked});
+  }
+
+  handleOpen = () => {
+    if(this.state.ModalOpen ? this.setState({ModalOpen:false}) : this.setState({ModalOpen:true}));
+  };
+
   render() {
     let gamePhase = "";
+    let theme = "";
     if(this.state.isPrepStage ? gamePhase = "Begin Game" : gamePhase = "Reset Game");
     return (
       <React.Fragment>
         <label>{this.state.gameEnded ? this.state.gameWinner : `Player ${this.state.player}` }</label>
         <Button color="primary" id="prepButton" name="prepButton" size="large" onClick={() => this.prepStageChange()}>{gamePhase}</Button>
         <label>{this.state.isPrepStage ? "" : `Player ${this.state.currentPlayerTurn}'s Turn`}</label>
-        <table>
-        <tr>
+        <FormControlLabel
+          control={<Switch checked={this.state.themeChanged} onChange={this.themeChange.bind(this)} name="checkedA" />}
+        />
+        <IconButton color="primary" id="prepButton" name="prepButton" size="medium" onClick={() => this.handleOpen()}>
+          <InfoIcon/>
+        </IconButton>
+        <Modal
+          open={this.state.ModalOpen}
+          onClose={this.handleOpen}
+          aria-labelledby="simple-modal-title"
+          aria-describedby="simple-modal-description"
+        >
+          <div className="modalText">
+            <div className="modalMessage">
+              <strong>Game of the Generals</strong><br/>
+              <i>version 1.0</i><br/>
+              <strong>RULES:</strong><br/>
+              <p>Capture the enemy player's flag piece or have your flag piece reach enemy territory.</p>
+              <p>Piece Ranking</p>
+              <p><img className="modalImg" src="newAssets/flag.png"/>Flag - captures enemy Flag</p>
+              <p><img className="modalImg" src="newAssets/spy.png"/>Spy - captures 5 star general, officers below (except private) and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/5star.png"/>5 star - captures 4 star general, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/4star.png"/>4 star - captures 3 star general, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/3star.png"/>3 star - captures 2 star general, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/2star.png"/>2 star - captures 1 star general, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/1star.png"/>1 star - captures Colonel, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/colonel.png"/>Colonel - captures 5 Lieutenant colonel, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/ltCol.png"/>Lieutenant colonel - captures major, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/major.png"/>Major - captures 5 captain, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/captain.png"/>Captain - captures 1st Lieutenant, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/1stLieut.png"/>1st Lieutenant - captures 2nd Lieutenant, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/2ndLieut.png"/>2nd Lieutanant - captures Sergeant, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/sergeant.png"/>Sergeant - captures Private, officers below and enemy flag</p>
+              <p><img className="modalImg" src="newAssets/private.png"/>Private - captures spy and enemy flag</p>
+            </div>
+          </div>
+        </Modal>
+        <div className="board-row">
           {this.renderSquare(0,1)}
           {this.renderSquare(1,1)}
           {this.renderSquare(2,1)}
@@ -368,8 +421,8 @@ class Board extends React.Component {
           {this.renderSquare(6,1)}
           {this.renderSquare(7,1)}
           {this.renderSquare(8,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">   
           {this.renderSquare(9,1)}
           {this.renderSquare(10,1)}
           {this.renderSquare(11,1)}
@@ -379,8 +432,8 @@ class Board extends React.Component {
           {this.renderSquare(15,1)}
           {this.renderSquare(16,1)}
           {this.renderSquare(17,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">
           {this.renderSquare(18,1)}
           {this.renderSquare(19,1)}
           {this.renderSquare(20,1)}
@@ -390,8 +443,8 @@ class Board extends React.Component {
           {this.renderSquare(24,1)}
           {this.renderSquare(25,1)}
           {this.renderSquare(26,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">
           {this.renderSquare(27,1)}
           {this.renderSquare(28,1)}
           {this.renderSquare(29,1)}
@@ -401,8 +454,8 @@ class Board extends React.Component {
           {this.renderSquare(33,1)}
           {this.renderSquare(34,1)}
           {this.renderSquare(35,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">
           {this.renderSquare(36,1)}
           {this.renderSquare(37,1)}
           {this.renderSquare(38,1)}
@@ -412,8 +465,8 @@ class Board extends React.Component {
           {this.renderSquare(42,1)}
           {this.renderSquare(43,1)}
           {this.renderSquare(44,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">
           {this.renderSquare(45,1)}
           {this.renderSquare(46,1)}
           {this.renderSquare(47,1)}
@@ -423,8 +476,8 @@ class Board extends React.Component {
           {this.renderSquare(51,1)}
           {this.renderSquare(52,1)}
           {this.renderSquare(53,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">
           {this.renderSquare(54,1)}
           {this.renderSquare(55,1)}
           {this.renderSquare(56,1)}
@@ -434,8 +487,8 @@ class Board extends React.Component {
           {this.renderSquare(60,1)}
           {this.renderSquare(61,1)}
           {this.renderSquare(62,1)}
-        </tr>
-        <tr>
+        </div>
+        <div className="board-row">
           {this.renderSquare(63,1)}
           {this.renderSquare(64,1)}
           {this.renderSquare(65,1)}
@@ -445,8 +498,7 @@ class Board extends React.Component {
           {this.renderSquare(69,1)}
           {this.renderSquare(70,1)}
           {this.renderSquare(71,1)}
-        </tr>
-      </table>
+        </div>
       </React.Fragment>
     );
   }
@@ -458,10 +510,6 @@ export default class Game extends React.Component {
       <div className="game">
         <div className="game-board">
           <Board/>
-        </div>
-        <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
         </div>
       </div>
     );
